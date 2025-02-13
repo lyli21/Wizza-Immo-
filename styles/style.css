@@ -40,3 +40,27 @@ button:hover {
     margin-left: 0;
    background: none;
 }
+
+/* connexion isncription */
+
+.title {
+    font-size: 28px;
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.form-group label {
+    font-weight: bold;
+}
