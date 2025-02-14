@@ -64,3 +64,48 @@ button:hover {
 .form-group label {
     font-weight: bold;
 }
+
+
+.detail-container {
+    width: 80%;
+    margin: 20px auto;
+}
+.image-annonce {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+}
+.titre-annonce {
+    color: #333;
+    margin-bottom: 10px;
+}
+.prix {
+    color: #008000;
+    font-size: 24px;
+    margin: 10px 0;
+}
+.type-offre {
+    background: #f0f0f0;
+    padding: 5px 10px;
+    display: inline-block;
+    margin: 5px 0;
+}
+.caracteristiques {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 15px 0;
+}
+.description {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 15px 0;
+    background: #fff;
+}
+.btn-modifier {
+    background: orange;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}

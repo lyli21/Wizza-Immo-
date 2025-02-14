@@ -65,12 +65,6 @@ if(isset($_SESSION['ty_libelle'])){
     echo 'Accès par défaut';
 }
 
-// Messages de débogage
-echo "<pre>";
-echo "Session ID: " . session_id() . "\n";
-echo "User ID: " . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'Not set') . "\n";
-echo "Username: " . ($username ? $username : 'Not set') . "\n";
-echo "</pre>";
 ?>
 
 <header>
@@ -97,6 +91,13 @@ echo "</pre>";
                 <a href="connexion.php" class="lien">Connexion</a>
             </button>
         <?php endif; ?>
+        <!-- Bouton d'ajout d'annonce -->
+        <?php if (isset($isAdminOrCommercial) && $isAdminOrCommercial): ?>
+            <a href="annonce.php" class="btn btn-success">
+                <i class="fas fa-plus"></i> Ajouter une annonce
+            </a>
+        <?php endif; ?>
+    </div>
     </nav>
 </header>
 </body>

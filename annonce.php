@@ -1,7 +1,7 @@
 <?php
 include 'header.php';
 
-// Connexion à la base de données
+
 $host = 'localhost';
 $dbname = 'wazzaimmo';
 $username = 'root';
@@ -14,11 +14,11 @@ try {
     die("Erreur de connexion : " . $e->getMessage());
 }
 
-// Récupération des types de biens
+// recupere tout les types de bien
 $typeBiens = $pdo->query("SELECT * FROM waz_type_bien")->fetchAll();
 $typeOffres = $pdo->query("SELECT * FROM waz_type_offre")->fetchAll();
 
-// Initialisation des variables
+// initialisation des variable
 $titre = $description = $localisation = $surfaceHab = $surfaceTot = $prix = $diagnostic = '';
 $pieces = $typeBien = $typeOffre = '';
 $message = '';
@@ -44,9 +44,9 @@ if(isset($_GET['id'])) {
     }
 }
 
-// Traitement du formulaire
+// traitement du formulaire en post pour ajouter ou modifier une annonce
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération des données du formulaire
+    // recuperation des données du formulaire
     $titre = $_POST['titre'];
     $description = $_POST['description'];
     $localisation = $_POST['localisation'];
@@ -60,7 +60,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if(isset($_GET['id'])) {
-            // Mise à jour d'une annonce existante
+            // mise à jour d'une annonce existante
             $sql = "UPDATE waz_annonces SET 
                     an_titre = ?, 
                     an_description = ?,
@@ -80,7 +80,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$titre, $description, $localisation, $surfaceHab, $surfaceTot, 
                           $prix, $diagnostic, $pieces, $typeBien, $typeOffre, $_GET['id']]);
         } else {
-            // Création d'une nouvelle annonce
+            // creation d'une nouvelle annonce
             $sql = "INSERT INTO waz_annonces (an_titre, an_description, an_localisation, 
                     an_surf_hab, an_surf_tot, an_prix, an_diagnostic, an_pieces, 
                     ty_bien_id, ty_offre_id, an_d_ajout, an_d_modif, etat_id) 
@@ -89,6 +89,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$titre, $description, $localisation, $surfaceHab, $surfaceTot, 
                           $prix, $diagnostic, $pieces, $typeBien, $typeOffre]);
+        }
+
+
+
+
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            $uploads_dir = 'photos/';
+            $tmp_name = $_FILES['photo']['tmp_name'];
+            $filename = uniqid() . '_' . basename($_FILES['photo']['name']);
+            $photo_path = $uploads_dir . $filename;
+        
+            if (move_uploaded_file($tmp_name, $photo_path)) {
+                $photo = $filename;
+            } else {
+                $message = "Erreur lors de l'upload de la photo.";
+            }
         }
         
         header('Location: index.php');
@@ -108,6 +124,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" class="mt-4">
         <div class="row">
+
+        <label for="image" class="form-label">Image du produit: </label>
+            <input type="file" class="form-control" id="image" name="photos_libelle" value="<?= $id ? htmlentities($photo) : "" ?>">
+
             <div class="col-md-6 mb-3">
                 <label for="titre" class="form-label">Titre</label>
                 <input type="text" class="form-control" id="titre" name="titre" value="<?= $titre ?>" required>

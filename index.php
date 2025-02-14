@@ -1,24 +1,15 @@
 <?php
-$host = '127.0.0.1';
-$dbname = 'wazzaimmo';
-$username = 'root';
-$password = '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erreur de connexion :" . $e->getMessage());
-}
-
 include 'header.php';
 
 // Requête sql pour afficher les annonces
-$sql = "SELECT DISTINCT wa.*, wp.photos_libelle, wto.offre_libelle FROM waz_annonces wa LEFT 
-        JOIN peut_contenir pc ON wa.an_id = pc.an_id LEFT JOIN waz_photos wp ON pc.photos_id = wp.photos_id 
+$sql = "SELECT wa.*, GROUP_CONCAT(wp.photos_libelle) AS photos_libelle, wto.offre_libelle 
+        FROM waz_annonces wa 
+        LEFT JOIN peut_contenir pc ON wa.an_id = pc.an_id 
+        LEFT JOIN waz_photos wp ON pc.photos_id = wp.photos_id 
         LEFT JOIN waz_type_offre wto ON wa.ty_offre_id = wto.ty_offre_id
-WHERE 
-    wa.etat_id = 1";
+        WHERE wa.etat_id = 1
+        GROUP BY wa.an_id";
+
 
 try {
     $annonces = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
@@ -43,7 +34,7 @@ if ($count == 0) {
 
     <!-- Liste des annonces -->
     <div class="row">
-        <?php if(empty($annonces)): ?>
+        <?php if (empty($annonces)): ?>
             <div class="col-12">
                 <div class="alert alert-info">Aucune annonce disponible pour le moment.</div>
             </div>
@@ -51,21 +42,18 @@ if ($count == 0) {
             <?php foreach ($annonces as $annonce): ?>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
-                        <?php 
-                        $imagePath = !empty($annonce['photos_libelle']) 
-                            ? "uploads/" . htmlspecialchars($annonce['photos_libelle'])
-                            : "photos/annonce_1/1-1.jpg";
-                        ?>
-                        <img src="<?= $imagePath ?>"
-                             class="card-img-top"
-                             alt="<?= htmlspecialchars($annonce['an_titre']) ?>"
-                             onerror="this.src='photos/annonce_1/1-1.jpg'">
+
+                    <img src="<?= !empty($annonce['photos_libelle']) ? 'uploads/' . explode(',', $annonce['photos_libelle'])[0] : 'default.jpg' ?>"
+    class="card-img-top"
+    alt="<?= htmlspecialchars($annonce['an_titre']) ?>"
+    style="height: 200px; object-fit: cover;">
+
+
 
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($annonce['an_titre']) ?></h5>
                             <div class="badge bg-primary mb-2">
-                                <?= $annonce['offre_libelle'] === 'A' ? 'Achat' : 
-                                   ($annonce['offre_libelle'] === 'L' ? 'Location' : 'Viager') ?>
+                                <?= $annonce['offre_libelle'] === 'A' ? 'Achat' : ($annonce['offre_libelle'] === 'L' ? 'Location' : 'Viager') ?>
                             </div>
                             <p class="card-text">
                                 <strong>Prix : </strong><?= number_format($annonce['an_prix'], 0, ',', ' ') ?> €<br>
@@ -79,11 +67,10 @@ if ($count == 0) {
                         </div>
 
                         <div class="card-footer bg-white border-top-0">
-                            <a href="annonce.php?id=<?= $annonce['an_id'] ?>"
-                               class="btn btn-primary">Voir détails</a>
+                        <a href="detail.php?id=<?= $annonce['an_id'] ?>" class="btn btn-primary">Voir détails</a>
                             <?php if (isset($isAdminOrCommercial) && $isAdminOrCommercial): ?>
                                 <a href="annonce.php?id=<?= $annonce['an_id'] ?>"
-                                   class="btn btn-warning">Modifier</a>
+                                    class="btn btn-warning">Modifier</a>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -94,21 +81,21 @@ if ($count == 0) {
 </div>
 
 <style>
-.card {
-    transition: transform 0.2s;
-}
+    .card {
+        transition: transform 0.2s;
+    }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
 
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
-}
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
 
-.badge {
-    font-size: 0.9em;
-}
+    .badge {
+        font-size: 0.9em;
+    }
 </style>
